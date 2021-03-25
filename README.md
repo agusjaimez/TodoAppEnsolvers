@@ -8,6 +8,7 @@
 
 ### TodoNodeServer
 * Node: v10.16.3
+* MySQL: 5.7
 * Node modules:
     * cors: 2.8.5
     * express: 4.17.1
