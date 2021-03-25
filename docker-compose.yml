@@ -1,0 +1,42 @@
+version: '3.4'
+
+services:
+  nodeserver:
+    build:
+      context: backend
+      dockerfile: ./Dockerfile
+    environment:
+      NODE_ENV: production
+      DB_PORT: "3306"
+    ports:
+      - "58000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  app:
+    build:
+      context: frontend
+      dockerfile: ./Dockerfile
+    ports:
+      - "53000:3000"
+    depends_on:
+      - nodeserver
+    environment:
+      REACT_APP_API_URL: "http://localhost:58000"
+
+  db:
+    image: mysql:5.7
+    expose:
+      - "3306"
+    environment:
+      MYSQL_RANDOM_ROOT_PASSWORD: 'yes'
+    volumes:
+      - "./init.sql:/docker-entrypoint-initdb.d/init.sql"
+      - "./db-data:/var/lib/mysql"
+    healthcheck:
+      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
+      timeout: 45s
+      interval: 10s
+      retries: 10
+
